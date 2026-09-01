@@ -19,7 +19,13 @@ st.set_page_config(
     page_icon="🗺️",
     layout="wide",
 )
-st.title("Météo France - Carte des prévisions")
+st.title("Carte des prévisions météorologiques")
+st.markdown(
+    """
+    Explorez les prévisions météorologiques à travers la France en utilisant
+    des données provenant de l'API Open-Meteo.
+    """
+)
 
 df = load_data()
 
