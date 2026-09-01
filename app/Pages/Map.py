@@ -22,9 +22,7 @@ df = load_weather_data()
 col1, col2 = st.columns(2)
 
 with col1:
-    timestamps = sorted(
-        df["timestamp"].unique()
-    )
+    timestamps = sorted(df["timestamp"].unique())
 
     selected_timestamp = st.selectbox(
         "Forecast time",
@@ -94,6 +92,7 @@ fig = px.scatter_map(
         "longitude": False,
         "population": False,
     },
+    center={"lat": 46.5, "lon": 2.5}, # centre de la france
     zoom=5,
     height=700,
     labels={
