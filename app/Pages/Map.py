@@ -1,18 +1,7 @@
 import pandas as pd
 import plotly.express as px
 import streamlit as st
-
-DATA_FILE = "data/processed/weather.parquet"
-
-@st.cache_data
-def load_data() -> pd.DataFrame:
-    df = pd.read_parquet(DATA_FILE)
-
-    df["timestamp"] = pd.to_datetime(
-        df["timestamp"]
-    )
-
-    return df
+from utils.data import load_weather_data
 
 st.set_page_config(
     page_title="Météo France",
@@ -27,7 +16,7 @@ st.markdown(
     """
 )
 
-df = load_data()
+df = load_weather_data()
 
 # Filters
 col1, col2 = st.columns(2)
