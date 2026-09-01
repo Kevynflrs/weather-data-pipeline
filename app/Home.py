@@ -14,7 +14,7 @@ st.set_page_config(
     layout="wide",
 )
 
-st.title("🌦️ Météo France")
+st.title("Météo France")
 
 df = load_data()
 
@@ -36,7 +36,7 @@ col4.metric("🌧️ Précipitations", f"{total_precipitation:.1f} mm")
 
 st.divider()
 
-st.subheader("📊 Données disponibles")
+st.subheader("Données disponibles")
 st.write(f"Communes suivies : **{df['city'].nunique()}**")
 st.write(f"Observations : **{len(df):,}**")
 st.write(f"Début des prévisions : **{df['timestamp'].min()}**")

@@ -15,8 +15,8 @@ def load_data() -> pd.DataFrame:
     return df
 
 st.set_page_config(
-    page_title="France Map",
-    page_icon="🗺️",
+    page_title="Météo France",
+    page_icon="🌦️",
     layout="wide",
 )
 st.title("Carte des prévisions météorologiques")
