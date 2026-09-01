@@ -2,9 +2,12 @@ from pathlib import Path
 import pandas as pd
 from src.ingestion.communes import get_french_communes
 from src.ingestion.open_meteo import get_weather
+from src.validation.weather import validate_weather_data
+from src.transformation.weather import transform_weather_data
 
 COMMUNES_FILE = Path("data/raw/communes.parquet")
 WEATHER_FILE = Path("data/raw/weather.parquet")
+PROCESSED_WEATHER_FILE = Path("data/processed/weather.parquet")
 NUMBER_OF_CITIES = 100
 
 def main() -> None:
@@ -27,19 +30,14 @@ def main() -> None:
 
     print(f"Selected {len(cities)} cities.")
 
-    weather_data = get_weather(
-        latitudes=cities["latitude"].tolist(),
-        longitudes=cities["longitude"].tolist(),
-    )
+    weather_data = get_weather(latitudes=cities["latitude"].tolist(), longitudes=cities["longitude"].tolist())
 
     rows = []
-
     for city, weather in zip(cities.to_dict("records"), weather_data):
 
         hourly = weather["hourly"]
-        number_of_hours = len(hourly["time"])
+        for i in range(len(hourly["time"])):
 
-        for i in range(number_of_hours):
             rows.append(
                 {
                     "insee_code": city["insee_code"],
@@ -115,19 +113,22 @@ def main() -> None:
             )
 
     df = pd.DataFrame(rows)
-
-    df["timestamp"] = pd.to_datetime(
-        df["timestamp"]
-    )
-
+    validate_weather_data(df)
+    WEATHER_FILE.parent.mkdir(parents=True, exist_ok=True)
     df.to_parquet(WEATHER_FILE, index=False)
-    print(f"Saved {len(df)} weather records.")
+    print(f"Saved raw data to {WEATHER_FILE}")
 
-    print("\nDataset:")
-    print(df.head())
+    df = transform_weather_data(df)
 
-    print("\nShape:")
+    PROCESSED_WEATHER_FILE.parent.mkdir(parents=True, exist_ok=True)
+    df.to_parquet(PROCESSED_WEATHER_FILE, index=False)
+    print(f"Saved processed data to {PROCESSED_WEATHER_FILE}")
+
+    print("\nDataset shape:")
     print(df.shape)
+
+    print("\nColumns:")
+    print(df.columns.tolist())
 
 if __name__ == "__main__":
     main()
