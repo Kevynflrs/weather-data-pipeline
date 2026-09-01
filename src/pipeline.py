@@ -4,13 +4,16 @@ from src.ingestion.communes import get_french_communes
 from src.ingestion.open_meteo import get_weather
 from src.validation.weather import validate_weather_data
 from src.transformation.weather import transform_weather_data
+from datetime import datetime, timezone
 
 COMMUNES_FILE = Path("data/raw/communes.parquet")
 WEATHER_FILE = Path("data/raw/weather.parquet")
-PROCESSED_WEATHER_FILE = Path("data/processed/weather.parquet")
+PROCESSED_WEATHER_DIR = Path("data/processed/weather")
 NUMBER_OF_CITIES = 100
 
 def main() -> None:
+
+    forecast_run = datetime.now(timezone.utc)
 
     communes = get_french_communes()
     COMMUNES_FILE.parent.mkdir(parents=True, exist_ok=True)
@@ -40,6 +43,7 @@ def main() -> None:
 
             rows.append(
                 {
+                    "forecast_run": forecast_run,
                     "insee_code": city["insee_code"],
                     "city": city["city"],
                     "latitude": city["latitude"],
@@ -74,9 +78,12 @@ def main() -> None:
 
     df = transform_weather_data(df)
 
-    PROCESSED_WEATHER_FILE.parent.mkdir(parents=True, exist_ok=True)
-    df.to_parquet(PROCESSED_WEATHER_FILE, index=False)
-    print(f"Saved processed data to {PROCESSED_WEATHER_FILE}")
+    PROCESSED_WEATHER_DIR.mkdir(parents=True, exist_ok=True)
+    run_filename = (forecast_run.strftime("%Y-%m-%d_%H%M") + ".parquet")
+    processed_file = (PROCESSED_WEATHER_DIR / run_filename)
+    df.to_parquet(processed_file, index=False)
+
+    print(f"Saved processed data to {processed_file}")
 
     print("\nDataset shape:")
     print(df.shape)

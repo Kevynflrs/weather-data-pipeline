@@ -3,6 +3,7 @@ import pandas as pd
 def transform_weather_data(df: pd.DataFrame) -> pd.DataFrame:
 
     result = df.copy()
+    result["forecast_run"] = pd.to_datetime(result["forecast_run"])
 
     # Timestamp
     result["timestamp"] = pd.to_datetime(result["timestamp"])

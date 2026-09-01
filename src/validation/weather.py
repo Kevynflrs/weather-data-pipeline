@@ -1,6 +1,7 @@
 import pandas as pd
 
 REQUIRED_COLUMNS = [
+    "forecast_run",
     "insee_code",
     "city",
     "latitude",
