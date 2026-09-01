@@ -19,7 +19,7 @@ st.set_page_config(
     page_icon="🗺️",
     layout="wide",
 )
-st.title("🗺️ France Météo Map")
+st.title("Météo France - Carte des prévisions")
 
 df = load_data()
 
@@ -32,7 +32,7 @@ with col1:
     )
 
     selected_timestamp = st.selectbox(
-        "🕐 Forecast time",
+        "Forecast time",
         timestamps,
         format_func=lambda x: x.strftime(
             "%d/%m/%Y %H:%M"
@@ -41,7 +41,7 @@ with col1:
 
 with col2:
     variable = st.selectbox(
-        "📊 Variable",
+        "Variable",
         [
             "temperature",
             "precipitation",
@@ -51,8 +51,26 @@ with col2:
         ],
     )
 
+cities = sorted(df["city"].unique())
+selected_city = st.selectbox("Search for a city", ["All cities"] + cities)
+
 # Filter data
 map_data = df[df["timestamp"] == selected_timestamp].copy()
+
+if selected_city != "All cities":
+    map_data = map_data[map_data["city"] == selected_city]
+
+if selected_city != "All cities":
+
+    city_weather = map_data.iloc[0]
+    st.divider()
+    
+    col1, col2, col3, col4 = st.columns(4)
+
+    col1.metric("🌡️ Temperature", f"{city_weather['temperature']:.1f} °C")
+    col2.metric("💧 Humidity", f"{city_weather['humidity']:.0f} %")
+    col3.metric("🌧️ Precipitation", f"{city_weather['precipitation']:.1f} mm")
+    col4.metric("💨 Wind", f"{city_weather['wind_speed']:.1f} km/h")
 
 # Labels
 variable_labels = {
