@@ -22,15 +22,11 @@ def validate_weather_data(df: pd.DataFrame) -> None:
     ]
 
     if missing_columns:
-        raise ValueError(
-            f"Missing columns: {missing_columns}"
-        )
+        raise ValueError(f"Missing columns: {missing_columns}")
 
     # Empty dataset
     if df.empty:
-        raise ValueError(
-            "Weather dataset is empty."
-        )
+        raise ValueError("Weather dataset is empty.")
 
     # Missing values
     critical_columns = [
@@ -44,62 +40,31 @@ def validate_weather_data(df: pd.DataFrame) -> None:
     missing_values = df[critical_columns].isna().sum()
 
     if missing_values.any():
-        raise ValueError(
-            f"Missing critical values:\n{missing_values}"
-        )
+        raise ValueError(f"Missing critical values:\n{missing_values}")
 
     # Coordinates
-    if not df["latitude"].between(
-        -90,
-        90,
-    ).all():
-        raise ValueError(
-            "Invalid latitude detected."
-        )
+    if not df["latitude"].between(-90, 90).all():
+        raise ValueError("Invalid latitude detected.")
 
-    if not df["longitude"].between(
-        -180,
-        180,
-    ).all():
-        raise ValueError(
-            "Invalid longitude detected."
-        )
+    if not df["longitude"].between(-180, 180).all():
+        raise ValueError("Invalid longitude detected.")
 
     # Temperature
-    if not df["temperature"].between(
-        -50,
-        60,
-    ).all():
-        raise ValueError(
-            "Unrealistic temperature detected."
-        )
+    if not df["temperature"].between(-50, 60).all():
+        raise ValueError("Unrealistic temperature detected.")
 
     # Humidity
-    if not df["humidity"].between(
-        0,
-        100,
-    ).all():
-        raise ValueError(
-            "Invalid humidity detected."
-        )
+    if not df["humidity"].between(0, 100).all():
+        raise ValueError("Invalid humidity detected.")
 
     # Precipitation
     if (df["precipitation"] < 0).any():
-        raise ValueError(
-            "Negative precipitation detected."
-        )
+        raise ValueError("Negative precipitation detected.")
 
     # Duplicates
-    duplicates = df.duplicated(
-        subset=[
-            "insee_code",
-            "timestamp",
-        ]
-    )
+    duplicates = df.duplicated(subset=["insee_code", "timestamp"])
 
     if duplicates.any():
-        raise ValueError(
-            f"{duplicates.sum()} duplicate weather records detected."
-        )
+        raise ValueError(f"{duplicates.sum()} duplicate weather records detected.")
 
     print("Weather data validation passed.")
