@@ -3,7 +3,7 @@ import pandas as pd
 
 BASE_URL = "https://historical-forecast-api.open-meteo.com/v1/forecast"
 
-def fetch_historical_weather(latitude: float, longitude: float, start_date: str, end_date: str,) -> pd.DataFrame:
+def fetch_historical_weather(latitude: float, longitude: float, start_date: str, end_date: str, insee_code: str, city: str) -> pd.DataFrame:
 
     params = {
         "latitude": latitude,
@@ -26,7 +26,21 @@ def fetch_historical_weather(latitude: float, longitude: float, start_date: str,
     data = response.json()
 
     df = pd.DataFrame(data["hourly"])
-    df["timestamp"] = pd.to_datetime(df["time"])
-    df = df.drop(columns=["time"])
+
+    df = df.rename(
+        columns={
+            "time": "timestamp",
+            "temperature_2m": "temperature",
+            "relative_humidity_2m": "humidity",
+            "wind_speed_10m": "wind_speed",
+            "weather_code": "weather_code",
+        }
+    )
+
+    df["timestamp"] = pd.to_datetime(df["timestamp"])
+    df["insee_code"] = insee_code
+    df["city"] = city
+    df["latitude"] = latitude
+    df["longitude"] = longitude
 
     return df
