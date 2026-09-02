@@ -5,6 +5,7 @@ from src.ingestion.open_meteo import get_weather
 from src.validation.weather import validate_weather_data
 from src.transformation.weather import transform_weather_data
 from datetime import datetime, timezone
+from src.storage.weather import append_to_history
 
 COMMUNES_FILE = Path("data/raw/communes.parquet")
 WEATHER_FILE = Path("data/raw/weather.parquet")
@@ -82,8 +83,10 @@ def main() -> None:
     run_filename = (forecast_run.strftime("%Y-%m-%d_%H%M") + ".parquet")
     processed_file = (PROCESSED_WEATHER_DIR / run_filename)
     df.to_parquet(processed_file, index=False)
-
     print(f"Saved processed data to {processed_file}")
+
+    history = append_to_history(df)
+    print(f"Historical dataset contains {len(history):,} records.")
 
     print("\nDataset shape:")
     print(df.shape)
