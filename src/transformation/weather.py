@@ -57,4 +57,7 @@ def transform_weather_data(df: pd.DataFrame) -> pd.DataFrame:
     # Sort
     result = result.sort_values(["insee_code", "timestamp"])
 
+    result["forecast_horizon_hours"] = ((result["timestamp"] - result["forecast_run"]).dt.total_seconds() / 3600)
+    result["forecast_horizon_days"] = (result["forecast_horizon_hours"] / 24)
+
     return result
