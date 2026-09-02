@@ -4,8 +4,9 @@ def compare_forecast_with_reference(forecast: pd.DataFrame, reference: pd.DataFr
 
     forecast = forecast.copy()
     reference = reference.copy()
-    forecast["timestamp"] = pd.to_datetime(forecast["timestamp"])
-    reference["timestamp"] = pd.to_datetime(reference["timestamp"])
+    forecast["timestamp"] = pd.to_datetime(forecast["timestamp"], utc=True)
+    forecast["forecast_run"] = pd.to_datetime(forecast["forecast_run"], utc=True)
+    reference["timestamp"] = pd.to_datetime(reference["timestamp"], utc=True)
 
     merged = forecast.merge(
         reference,
@@ -22,6 +23,7 @@ def compare_forecast_with_reference(forecast: pd.DataFrame, reference: pd.DataFr
     )
 
     merged["forecast_horizon_hours"] = ((merged["timestamp"] - merged["forecast_run"]).dt.total_seconds() / 3600)
+    merged = merged[merged["forecast_horizon_hours"] >= 0].copy()
 
     # Calcul de l'erreur de température
     merged["temperature_error"] = (merged["temperature_forecast"] - merged["temperature_reference"])

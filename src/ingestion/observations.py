@@ -37,7 +37,11 @@ def fetch_historical_weather(latitude: float, longitude: float, start_date: str,
         }
     )
 
-    df["timestamp"] = pd.to_datetime(df["timestamp"])
+    df["timestamp"] = (
+        pd.to_datetime(df["timestamp"])
+        .dt.tz_localize("Europe/Paris")
+        .dt.tz_convert("UTC")
+    )
     df["insee_code"] = insee_code
     df["city"] = city
     df["latitude"] = latitude
