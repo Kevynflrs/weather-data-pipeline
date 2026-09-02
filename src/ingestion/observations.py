@@ -1,7 +1,7 @@
 import requests
 import pandas as pd
 
-BASE_URL = "https://historical-forecast-api.open-meteo.com/v1/forecast"
+BASE_URL = "https://archive-api.open-meteo.com/v1/archive"
 
 def fetch_historical_weather(latitude: float, longitude: float, start_date: str, end_date: str, insee_code: str, city: str) -> pd.DataFrame:
 
@@ -20,7 +20,7 @@ def fetch_historical_weather(latitude: float, longitude: float, start_date: str,
         "timezone": "Europe/Paris",
     }
 
-    response = requests.get(BASE_URL, params=params, timeout=30)
+    response = requests.get(BASE_URL, params=params,timeout=30)
     response.raise_for_status()
 
     data = response.json()
@@ -37,6 +37,7 @@ def fetch_historical_weather(latitude: float, longitude: float, start_date: str,
         }
     )
 
+    # Open-Meteo retourne ici des heures locales Europe/Paris. On les convertit proprement en UTC.
     df["timestamp"] = (
         pd.to_datetime(df["timestamp"])
         .dt.tz_localize("Europe/Paris")
